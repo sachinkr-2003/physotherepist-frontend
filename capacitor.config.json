@@ -1,0 +1,9 @@
+{
+  "appId": "com.vkphysio.app",
+  "appName": "VK Physiotherapy",
+  "webDir": "dist",
+  "server": {
+    "url": "https://physotherepist-frontend.vercel.app/",
+    "cleartext": true
+  }
+}

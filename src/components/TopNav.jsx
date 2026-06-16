@@ -11,14 +11,14 @@ const TopNav = () => {
   ];
 
   return (
-    <nav className="bg-white shadow-sm sticky top-0 z-50 border-b border-gray-100">
+    <nav className="bg-white shadow-sm sticky top-0 z-50 border-b border-gray-100 pt-[env(safe-area-inset-top)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16 md:h-20">
-          <NavLink to="/" onClick={() => window.scrollTo(0, 0)} className="flex items-center gap-2">
-            <div className="text-brand-blue font-bold text-3xl tracking-tighter">VK</div>
+        <div className="flex justify-between items-center h-14 md:h-20">
+          <NavLink to="/" onClick={() => window.scrollTo(0, 0)} className="flex items-center gap-1.5 md:gap-2">
+            <div className="text-brand-blue font-bold text-2xl md:text-3xl tracking-tighter">VK</div>
             <div className="flex flex-col">
-              <span className="text-brand-green font-bold text-sm leading-tight tracking-wider">PHYSIOTHERAPY</span>
-              <span className="text-brand-blue font-bold text-xs leading-tight tracking-widest">CENTRE</span>
+              <span className="text-brand-green font-bold text-[10px] md:text-sm leading-tight tracking-wider">PHYSIOTHERAPY</span>
+              <span className="text-brand-blue font-bold text-[8px] md:text-xs leading-tight tracking-widest">CENTRE</span>
             </div>
           </NavLink>
           
