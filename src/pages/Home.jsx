@@ -44,8 +44,8 @@ const Home = () => {
     <div className="bg-gray-50 min-h-screen">
 
       {/* Hero Section with Slider */}
-      <div className="px-4 md:px-8 mt-4 md:mt-8 max-w-7xl mx-auto">
-        <div className="relative rounded-2xl overflow-hidden shadow-xl md:min-h-[450px] min-h-[350px] bg-brand-blue">
+      <div className="px-0 md:px-8 max-w-7xl mx-auto">
+        <div className="relative md:rounded-2xl overflow-hidden shadow-xl md:min-h-[450px] min-h-[350px] bg-brand-blue">
           
           {/* Slides */}
           {heroSlides.map((slide, index) => (
