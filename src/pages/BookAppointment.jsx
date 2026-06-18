@@ -12,19 +12,65 @@ const BookAppointment = () => {
     date: '',
     timeSlot: ''
   });
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    Swal.fire({
-      title: 'Success!',
-      text: 'Your appointment has been requested successfully.',
-      icon: 'success',
-      confirmButtonColor: '#00875a',
-    });
+    setLoading(true);
+
+    try {
+      const token = localStorage.getItem('token');
+      const headers = {
+        'Content-Type': 'application/json'
+      };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      const response = await fetch(import.meta.env.VITE_API_URL + '/api/appointments', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(formData)
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        Swal.fire({
+          title: 'Success!',
+          text: 'Your appointment has been requested successfully.',
+          icon: 'success',
+          confirmButtonColor: '#00875a',
+        });
+        setFormData({
+          fullName: '',
+          mobileNumber: '',
+          service: '',
+          date: '',
+          timeSlot: ''
+        });
+      } else {
+        Swal.fire({
+          title: 'Error',
+          text: data.message || 'Failed to book appointment',
+          icon: 'error',
+          confirmButtonColor: '#00875a',
+        });
+      }
+    } catch (error) {
+      Swal.fire({
+        title: 'Error',
+        text: 'Something went wrong. Please try again.',
+        icon: 'error',
+        confirmButtonColor: '#00875a',
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -63,19 +109,7 @@ const BookAppointment = () => {
           
           <h2 className="hidden md:block text-2xl font-bold text-brand-blue mb-6">Patient Details</h2>
 
-          {/* Step Indicator */}
-          <div className="flex justify-center items-center py-6 md:py-0 md:pb-8 gap-2 md:gap-4">
-            {[1, 2, 3, 4, 5].map((step, index) => (
-              <React.Fragment key={step}>
-                <div className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center text-sm md:text-base font-semibold transition-colors ${
-                  step === 1 ? 'bg-brand-green text-white shadow-md' : 'bg-white border-2 border-gray-200 text-gray-400'
-                }`}>
-                  {step}
-                </div>
-                {index < 4 && <div className="w-4 md:w-12 h-[2px] bg-gray-200"></div>}
-              </React.Fragment>
-            ))}
-          </div>
+
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="px-4 md:px-0 space-y-4 md:space-y-6">
@@ -152,8 +186,12 @@ const BookAppointment = () => {
             </div>
 
             <div className="pt-4 pb-2 md:pt-6">
-              <button type="submit" className="w-full bg-brand-green hover:bg-green-700 text-white py-3.5 md:py-4 rounded-xl font-bold shadow-lg active:scale-[0.98] transition-all text-lg">
-                Continue
+              <button type="submit" disabled={loading} className="w-full bg-brand-green hover:bg-green-700 disabled:bg-green-400 text-white py-3.5 md:py-4 rounded-xl font-bold shadow-lg active:scale-[0.98] transition-all text-lg flex items-center justify-center">
+                {loading ? (
+                  <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                ) : (
+                  'Continue'
+                )}
               </button>
             </div>
             

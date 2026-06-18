@@ -1,8 +1,9 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { User, Home, ClipboardList, CalendarPlus, ImageIcon } from 'lucide-react';
+import { User, Home, ClipboardList, CalendarPlus, ImageIcon, LogIn } from 'lucide-react';
 
 const TopNav = () => {
+  const user = JSON.parse(localStorage.getItem('user') || 'null');
   const navItems = [
     { name: 'Home', path: '/', icon: Home },
     { name: 'Services', path: '/services', icon: ClipboardList },
@@ -42,17 +43,25 @@ const TopNav = () => {
             ))}
           </div>
           <div className="flex items-center gap-3 md:gap-4">
-            <NavLink 
-              to="/profile" 
-              onClick={() => window.scrollTo(0, 0)}
-              className="w-8 h-8 md:w-10 md:h-10 rounded-full overflow-hidden border-2 border-transparent hover:border-brand-green transition-colors"
-            >
-              <img 
-                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=150&q=80" 
-                alt="Profile" 
-                className="w-full h-full object-cover"
-              />
-            </NavLink>
+            {user ? (
+              <NavLink 
+                to="/profile" 
+                onClick={() => window.scrollTo(0, 0)}
+                className="w-8 h-8 md:w-10 md:h-10 rounded-full overflow-hidden border-2 border-transparent hover:border-brand-green transition-colors flex items-center justify-center bg-brand-green/10 text-brand-green font-bold text-sm"
+                title={user.name}
+              >
+                {user.name ? user.name.charAt(0).toUpperCase() : <User className="w-5 h-5" />}
+              </NavLink>
+            ) : (
+              <NavLink 
+                to="/auth" 
+                onClick={() => window.scrollTo(0, 0)}
+                className="flex items-center gap-2 text-brand-green font-semibold text-sm hover:text-green-700 transition-colors"
+              >
+                <LogIn className="w-5 h-5" />
+                <span className="hidden md:inline">Login</span>
+              </NavLink>
+            )}
             <NavLink 
               to="/book-appointment" 
               className="hidden md:flex bg-brand-blue hover:bg-blue-900 text-white px-6 py-2.5 rounded-lg font-semibold text-sm transition-colors shadow-sm"

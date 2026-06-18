@@ -6,37 +6,53 @@ const Appointments = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('upcoming');
 
-  const upcomingAppointments = [
-    {
-      id: 1,
-      service: 'Back Pain Treatment',
-      date: '20 May 2024, Mon',
-      time: '10:00 AM - 11:00 AM',
-      status: 'Confirmed',
-      statusColor: 'text-brand-green bg-green-100'
-    },
-    {
-      id: 2,
-      service: 'Knee Rehabilitation',
-      date: '25 May 2024, Sat',
-      time: '11:30 AM - 12:30 PM',
-      status: 'Confirmed',
-      statusColor: 'text-brand-green bg-green-100'
-    }
-  ];
+  const [upcomingAppointments, setUpcomingAppointments] = useState([]);
+  const [pastAppointments, setPastAppointments] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const pastAppointments = [
-    {
-      id: 3,
-      service: 'Neck Pain Treatment',
-      date: '10 May 2024, Fri',
-      time: '09:00 AM - 10:00 AM',
-      status: 'Completed',
-      statusColor: 'text-gray-600 bg-gray-100'
-    }
-  ];
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          navigate('/auth');
+          return;
+        }
+
+        const response = await fetch(import.meta.env.VITE_API_URL + '/api/appointments/my', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          
+          const upcoming = data.filter(apt => apt.status === 'Pending' || apt.status === 'Confirmed');
+          const past = data.filter(apt => apt.status === 'Completed' || apt.status === 'Cancelled');
+          
+          setUpcomingAppointments(upcoming);
+          setPastAppointments(past);
+        }
+      } catch (error) {
+        console.error('Error fetching appointments:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAppointments();
+  }, [navigate]);
 
   const displayAppointments = activeTab === 'upcoming' ? upcomingAppointments : pastAppointments;
+
+  const getStatusColor = (status) => {
+    switch(status) {
+      case 'Pending': return 'text-orange-700 bg-orange-100';
+      case 'Confirmed': return 'text-blue-700 bg-blue-100';
+      case 'Completed': return 'text-green-700 bg-green-100';
+      case 'Cancelled': return 'text-red-700 bg-red-100';
+      default: return 'text-gray-700 bg-gray-100';
+    }
+  };
 
   return (
     <div className="bg-gray-50 min-h-screen md:pb-12 pb-6">
@@ -75,22 +91,27 @@ const Appointments = () => {
 
         {/* Appointment List */}
         <div className="space-y-4">
-          {displayAppointments.length > 0 ? (
+          {loading ? (
+            <div className="text-center py-12 bg-white rounded-2xl shadow-sm border border-gray-100">
+              <div className="w-8 h-8 border-4 border-brand-green border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+              <p className="text-gray-500">Loading appointments...</p>
+            </div>
+          ) : displayAppointments.length > 0 ? (
             displayAppointments.map((apt) => (
-              <div key={apt.id} className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+              <div key={apt._id} className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
                 <div className="flex justify-between items-start mb-4">
                   <div>
-                    <h3 className="font-bold text-lg text-gray-900 mb-1">{apt.service}</h3>
+                    <h3 className="font-bold text-lg text-gray-900 mb-1 capitalize">{apt.service}</h3>
                     <div className="flex items-center gap-2 text-sm text-gray-500 mb-1">
                       <Calendar className="w-4 h-4" />
-                      <span>{apt.date}</span>
+                      <span>{new Date(apt.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', weekday: 'short' })}</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-gray-500">
                       <Clock className="w-4 h-4" />
-                      <span>{apt.time}</span>
+                      <span>{apt.timeSlot}</span>
                     </div>
                   </div>
-                  <span className={`px-3 py-1 rounded-full text-xs font-bold ${apt.statusColor}`}>
+                  <span className={`px-3 py-1 rounded-full text-xs font-bold ${getStatusColor(apt.status)}`}>
                     {apt.status}
                   </span>
                 </div>

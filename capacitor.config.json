@@ -1,5 +1,5 @@
 {
-  "appId": "com.vkphysio.app",
+  "appId": "com.vk.physio",
   "appName": "VK Physiotherapy",
   "webDir": "dist",
   "server": {
